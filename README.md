@@ -1,6 +1,6 @@
 # Cleaner Script
 
-This script is designed to clean up various system files and logs in Arch Linux distros using BleachBit. 
+This script is designed to clean up various system files and logs in Arch Linux and its derivatives using BleachBit. 
 It requires *root* privileges to run.
 
 ## Prerequisites
@@ -14,5 +14,3 @@ It requires *root* privileges to run.
 2. Install BleachBit:
    ```sh
    sudo pacman -S bleachbit
-
-   
