@@ -1,8 +1,16 @@
 import os
+import sys
 from pathlib import Path
 import subprocess
 
 def main():
+    # Allow root user to access the display server
+    subprocess.run(['xhost', 'si:localuser:root'])
+
+    # Switch to Root user
+    if os.geteuid() != 0:
+        os.execvp('sudo', ['sudo', 'python3'] + sys.argv)
+
     # Get the home directory of current user
     home_dir = str(Path.home())
 
@@ -24,4 +32,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
