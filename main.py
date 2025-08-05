@@ -4,17 +4,12 @@ from pathlib import Path
 import subprocess
 
 def main():
-    # Allow root user to access the display server
     subprocess.run(['xhost', 'si:localuser:root'])
 
-    # Switch to root user if not already
     if os.geteuid() != 0:
         os.execvp('sudo', ['sudo', sys.executable] + sys.argv)
 
-    # Get the home directory of the current user
     home_dir = str(Path.home())
-
-    # List of history files to shred
     history_files = [
         os.path.join(home_dir, '.bash_history'),
         os.path.join(home_dir, '.zsh_history')
@@ -22,15 +17,16 @@ def main():
 
     found = False
     for hist_file in history_files:
+        print(f"Checking: {hist_file}")
         if os.path.exists(hist_file):
-            subprocess.run(['bleachbit', '--shred', hist_file])
-            print(f"{hist_file} has been shredded.")
+            print(f"Shredding: {hist_file}")
+            result = subprocess.run(['shred', '-u', '-z', '-n', '10', hist_file])
+            print(f"shred exit code: {result.returncode}")
             found = True
 
     if not found:
         print("No history files found, please check manually.")
 
-    # Shred all log files in /var/log and /var/log/journal
     log_dirs = ['/var/log', '/var/log/journal']
     log_files = []
     for log_dir in log_dirs:
@@ -39,8 +35,13 @@ def main():
                 file_path = os.path.join(root, file)
                 log_files.append(file_path)
 
-    for log_file in log_files:
-        subprocess.run(['bleachbit', '--shred', log_file])
+    if not log_files:
+        print("No log files found.")
+    else:
+        for log_file in log_files:
+            print(f"Shredding: {log_file}")
+            result = subprocess.run(['shred', '-u', '-z', '-n', '10', log_file])
+            print(f"shred exit code: {result.returncode}")
 
 if __name__ == "__main__":
     main()
